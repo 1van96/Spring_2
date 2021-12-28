@@ -86,6 +86,13 @@ angular.module('app', ['ngStorage']).controller('indexController', function ($sc
             });
     }
 
+    $scope.createOrder = function() {
+       $http.get('http://localhost:8189/app/api/v1/orders')
+            .then(function successCallback(response) {
+                alert('Заказ создан!');
+            });
+    }
+
     $scope.loadProducts();
     $scope.loadCart();
 });
