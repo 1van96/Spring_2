@@ -1,45 +1,58 @@
 package com.geekbrains.spring.web.services;
 
 import com.geekbrains.spring.web.dto.Cart;
-import com.geekbrains.spring.web.dto.OrderItemDto;
+import com.geekbrains.spring.web.dto.OrderDetailsDto;
+import com.geekbrains.spring.web.dto.ProductDto;
 import com.geekbrains.spring.web.entities.Order;
 import com.geekbrains.spring.web.entities.OrderItem;
+import com.geekbrains.spring.web.entities.Product;
+import com.geekbrains.spring.web.entities.User;
 import com.geekbrains.spring.web.exceptions.ResourceNotFoundException;
-import com.geekbrains.spring.web.repositories.OrderRepository;
+import com.geekbrains.spring.web.repositories.OrdersRepository;
+import com.geekbrains.spring.web.repositories.ProductsRepository;
+import com.geekbrains.spring.web.repositories.specifications.ProductsSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    private final OrderRepository orderRepository;
-    private final CartService cartService;
-    private final ProductsService productsService;
-    private final UserService userService;
+   private final OrdersRepository ordersRepository;
+   private final CartService cartService;
+   private final ProductsService productsService;
 
-    @Transactional
-    public void createOrder() {
-        Cart cart = cartService.getCurrentCart();
-        Order order = new Order();
-        order.setTotalPrice(cart.getTotalPrice());
-        List<OrderItem> items = new ArrayList<>();
-        for (OrderItemDto i : cart.getItems()){
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            orderItem.setPrice(i.getPrice());
-            orderItem.setPrice_per_product(i.getPricePerProduct());
-            orderItem.setQuantity(i.getQuantity());
-            orderItem.setProduct(productsService.findById(i.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Не удалось найти продукт с ID " + i.getProductId())));
-            items.add(orderItem);
-        }
-        order.setItems(items);
-        order.setUser(userService.findByUsername("bob").get()); //Пока делаем одну корзину
-        orderRepository.save(order).getItems();
-    }
-    // Заказ создаётся, но при его загрузке вылетает StackOverflowError (при попытке запросить items).
-    // Сможете подсказать, где я ошибся в связке OneToMany и ManyToOne?
+   @Transactional
+   public void createOrder(User user, OrderDetailsDto orderDetailsDto) {
+      Cart currentCart = cartService.getCurrentCart();
+      Order order = new Order();
+      order.setAddress(orderDetailsDto.getAddress());
+      order.setPhone(orderDetailsDto.getPhone());
+      order.setUser(user);
+      order.setTotalPrice(currentCart.getTotalPrice());
+      List<OrderItem> items = currentCart.getItems().stream()
+              .map(o -> {
+                 OrderItem item = new OrderItem();
+                 item.setOrder(order);
+                 item.setQuantity(o.getQuantity());
+                 item.setPricePerProduct(o.getPricePerProduct());
+                 item.setPrice(o.getPrice());
+                 item.setProduct(productsService.findById(o.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found")));
+                 return item;
+              }).collect(Collectors.toList());
+      order.setItems(items);
+      ordersRepository.save(order);
+      currentCart.clear();
+   }
+
+   public List<Order> findOrdersByUsername(String username) {
+       return ordersRepository.findAllByUsername(username);
+   }
 }
