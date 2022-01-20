@@ -6,7 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SpringWebApplication {
 	// Домашнее задание:
-	// 1. Вынести заказы на отдельную страницу на фронте
+	// 1. Добавить категории продуктов
+	// 2. Добавить фильтр по категориям
+	// 3. Разобраться в механизме работы корзин
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpringWebApplication.class, args);
