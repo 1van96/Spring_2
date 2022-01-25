@@ -12,6 +12,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -55,5 +57,31 @@ public class ProductsService {
         product.setPrice(productDto.getPrice());
         product.setTitle(productDto.getTitle());
         return product;
+    }
+
+    public Optional<Product> findByTitle(String title) {
+        return productsRepository.findByTitle(title);
+    }
+
+    public com.geekbrains.spring.web.soap.products.ProductDto findByTitleDto(String title) {
+        Product first = productsRepository.findByTitle(title).get();
+        com.geekbrains.spring.web.soap.products.ProductDto dto = new com.geekbrains.spring.web.soap.products.ProductDto();
+        dto.setId(first.getId());
+        dto.setTitle(first.getTitle());
+        dto.setPrice(first.getPrice());
+        return dto;
+    }
+
+    public List<com.geekbrains.spring.web.soap.products.ProductDto> findAll() {
+        List<com.geekbrains.spring.web.soap.products.ProductDto> list = new ArrayList<>();
+        List<Product> temp = productsRepository.findAll();
+        for (int i = 0; i < temp.size(); i++){
+            com.geekbrains.spring.web.soap.products.ProductDto dto = new com.geekbrains.spring.web.soap.products.ProductDto();
+            dto.setId(temp.get(i).getId());
+            dto.setTitle(temp.get(i).getTitle());
+            dto.setPrice(temp.get(i).getPrice());
+            list.add(dto);
+        }
+        return list;
     }
 }

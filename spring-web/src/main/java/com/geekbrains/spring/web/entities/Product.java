@@ -1,6 +1,5 @@
 package com.geekbrains.spring.web.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,13 +16,13 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private long id;
 
     @Column(name = "title")
     private String title;
 
     @Column(name = "price")
-    private Integer price;
+    private int price;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
