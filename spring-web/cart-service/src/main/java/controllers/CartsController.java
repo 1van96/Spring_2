@@ -1,18 +1,15 @@
-package com.geekbrains.spring.web.core.controllers;
-
+package controllers;
 import com.geekbrains.spring.web.api.dto.StringResponse;
-import com.geekbrains.spring.web.core.dto.Cart;
-import com.geekbrains.spring.web.core.services.CartService;
-import com.geekbrains.spring.web.core.services.ProductsService;
+import dto.Cart;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import services.CartService;
 
 @RestController
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 public class CartsController {
     private final CartService cartService;
-    private final ProductsService productsService;
 
     @GetMapping("/{uuid}")
     public Cart getCart(@RequestHeader(required = false) String username, @PathVariable String uuid) {
