@@ -15,6 +15,13 @@ angular.module('market-front').controller('storeController', function ($scope, $
             $scope.ProductsPage = response.data;
             $scope.paginationArray = $scope.generatePagesIndexes(1, $scope.ProductsPage.totalPages);
         });
+        $http({
+            url: 'http://localhost:5555/rec/api/v1/day',
+            method: 'GET'
+        }).then(function (response) {
+        console.log(response.data);
+            $scope.ProductsRecommendation = response.data;
+        });
     };
 
     $scope.generatePagesIndexes = function (startPage, endPage) {
