@@ -11,6 +11,7 @@
         <module>auth-service</module>
         <module>api</module>
 		<module>cart-service</module>
+		<module>rec-service</module>
 	</modules>
 
     <parent>
