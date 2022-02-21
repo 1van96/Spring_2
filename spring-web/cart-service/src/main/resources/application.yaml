@@ -8,6 +8,3 @@ utils:
 integrations:
   core-service:
     url: http://localhost:5555/core
-
-  rec-service:
-    url: http://localhost:5555/rec
