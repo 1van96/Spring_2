@@ -1,6 +1,7 @@
 package com.geekbrains.spring.web.core.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "order_items")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItem {
