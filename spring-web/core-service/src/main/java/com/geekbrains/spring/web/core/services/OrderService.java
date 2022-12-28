@@ -6,6 +6,8 @@ import com.geekbrains.spring.web.api.core.OrderDetailsDto;
 import com.geekbrains.spring.web.core.entities.Order;
 import com.geekbrains.spring.web.core.entities.OrderItem;
 import com.geekbrains.spring.web.core.integrations.CartServiceIntegration;
+import com.geekbrains.spring.web.core.listener.Event;
+import com.geekbrains.spring.web.core.listener.EventPool;
 import com.geekbrains.spring.web.core.repositories.OrdersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class OrderService {
     private final OrdersRepository ordersRepository;
     private final CartServiceIntegration cartServiceIntegration;
     private final ProductsService productsService;
+    private final EventPool eventPool;
 
     @Transactional
     public void createOrder(String username, OrderDetailsDto orderDetailsDto) {
@@ -39,7 +42,7 @@ public class OrderService {
                         .product(productsService.findById(o.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found")))
                         .build()).collect(Collectors.toList());
         order.setItems(items);
-        ordersRepository.save(order);
+        eventPool.publishEvent(new Event(ordersRepository.save(order)));
         cartServiceIntegration.clearUserCart(username);
     }
 
