@@ -4,6 +4,7 @@ import com.geekbrains.spring.web.api.core.ProductDto;
 import com.geekbrains.spring.web.api.exceptions.ResourceNotFoundException;
 
 
+import com.geekbrains.spring.web.cart.IdentityMap;
 import com.geekbrains.spring.web.cart.integrations.ProductsServiceIntegration;
 import com.geekbrains.spring.web.cart.models.Cart;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,14 @@ public class CartService {
     }
 
     public Cart getCurrentCart(String cartKey) {
+        if (IdentityMap.isInto(cartKey)){
+            return IdentityMap.get(cartKey);
+        }
         if (!redisTemplate.hasKey(cartKey)) {
             redisTemplate.opsForValue().set(cartKey, new Cart());
         }
+
+        IdentityMap.add(cartKey, (Cart) redisTemplate.opsForValue().get(cartKey));
         return (Cart) redisTemplate.opsForValue().get(cartKey);
     }
 
